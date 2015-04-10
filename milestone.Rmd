@@ -1,0 +1,137 @@
+---
+title: 'Data Science Capstone Project: Milestone Report'
+author: "voxxys"
+date: "Sunday, March 29, 2015"
+output: html_document
+---
+
+The dataset
+---
+
+The data which we will use for building our prediction model comes from a corpus called **HC Corpora** (www.corpora.heliohost.org). The readme file containing the details for the corpora available can be accessed at http://www.corpora.heliohost.org/aboutcorpus.html.
+
+There are 3 text files for the English language:
+- **en_Us.twitter.txt**
+- **en_Us.blogs.txt**
+- **en_Us.news.txt**
+
+The files can be found in the **en_US** folder.
+
+```{r warnings = FALSE} 
+con <- file("en_US/en_US.twitter.txt", "r")
+c_twitter <- readLines(con);
+
+con <- file("en_US/en_US.blogs.txt", "r")
+c_blogs <- readLines(con);
+
+con <- file("en_US/en_US.news.txt", "r")
+c_news <- readLines(con);
+```
+
+
+Exploratory Data Analysis
+---
+
+The first file, en_Us.twitter.txt, contains 2360148 lines:
+
+```{r}
+length(c_twitter);
+```
+
+We can also find the total number of words in this file:
+
+```{r}
+
+countwords <- function(somestring) {
+  result <- sapply(gregexpr("\\W+", somestring), length) + 1;
+  return(result);
+  
+}
+
+wordcount1 <- lapply(c_twitter,countwords);
+temp1 <- unlist(wordcount1);
+wordcount1 <- sum(temp1);
+wordcount1
+```
+
+The distribution of entry length for en_Us.twitter.txt file:
+
+```{r}
+hist(temp1,main = paste("Histogram of entry length for the en_US.twitter.txt file"),xlab = "Entry length");
+```
+
+Example of entries from the file:
+
+```{r}
+head(c_twitter);
+```
+
+
+The file en_Us.blogs.txt contains 899288 lines:
+
+```{r}
+length(c_blogs);
+```
+
+
+The total number of words in this file:
+
+```{r}
+wordcount2 <- lapply(c_blogs,countwords);
+temp2 <- unlist(wordcount2);
+wordcount2 <- sum(temp2);
+wordcount2
+```
+
+The distribution of entry length for en_Us.blogs.txt file:
+
+```{r}
+hist(temp2,main = paste("Histogram of entry length for the en_US.blogs.txt file"),xlab = "Entry length");
+```
+
+Example of entries from the file:
+
+```{r}
+head(c_blogs);
+```
+
+
+
+
+The file en_Us.news.txt contains 77259 lines:
+
+```{r}
+length(c_news);
+```
+
+
+The total number of words in this file:
+
+```{r}
+wordcount3 <- lapply(c_news,countwords);
+temp3 <- unlist(wordcount3);
+wordcount3 <- sum(temp3);
+wordcount3
+```
+
+The distribution of entry length for en_Us.news.txt file:
+
+```{r}
+hist(temp3,main = paste("Histogram of entry length for the en_US.news.txt file"),xlim = c(0,2000),xlab = "Entry length");
+
+```
+
+Example of entries from the file:
+
+```{r}
+head(c_news)
+```
+
+
+The prediction model
+---
+
+To create a word prediction application, it is useful to analyse the frequency of words and word constructions that appear in the given files. Such analysis can be easily performed using *tm* and *RWeka* libraries. 
+
+For the given corpora, n-grams (sequences of n words) can be found and sorted by frequency. Then a Markow n-gram probability model can be built to predict the next word for a given phrase.
+
